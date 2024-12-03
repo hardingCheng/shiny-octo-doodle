@@ -12,6 +12,7 @@
 	}
 </script>
 
-<style>
+<style lang="scss">
+	@import url('./common/styles/common.scss');
 	/*每个页面公共css */
 </style>

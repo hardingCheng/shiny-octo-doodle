@@ -5,13 +5,6 @@
 			"style": {
 				"navigationBarTitleText": "首页"
 			}
-		},
-		{
-			"path" : "components/common-title/common-title/common-title",
-			"style" : 
-			{
-				"navigationBarTitleText" : ""
-			}
 		}
 	],
 	"globalStyle": {

@@ -54,11 +54,8 @@
 			</common-title>
 
 			<view class="content">
-				<scroll-view scroll-x>
-					<view class="box" v-for="item in 20" :key="item._id">
-						<image src="../../common/images/classify1.jpg" mode="aspectFill" />
-					</view>
-				</scroll-view>
+			  <theme-item v-for="i in 8"></theme-item>
+				<theme-item :isMore="true"></theme-item>
 			</view>
 
 		</view>
@@ -66,7 +63,8 @@
 </template>
 
 <script setup>
-	import commonTitle from '../../components/common-title/common-title/common-title.vue';
+	import commonTitle from '../../components/common-title/common-title.vue';
+  import themeItem from '../../components/theme-item/theme-item.vue';
 </script>
 
 <style scoped lang="scss">
@@ -203,35 +201,11 @@
 			}
 
 			.content {
-				// margin-top: 30rpx;
-				// padding: 0 30rpx;
-				// display: grid;
-				// gap: 15rpx;
-				// grid-template-columns: repeat(3, 1fr);
-				width: 720rpx;
-				margin-left: 30rpx;
-				margin-top: 30rpx;
-
-				scroll-view {
-					white-space: nowrap;
-
-					.box {
-						width: 200rpx;
-						height: 430rpx;
-						display: inline-block;
-						margin-right: 15rpx;
-
-						image {
-							width: 100%;
-							height: 100%;
-							border-radius: 10rpx;
-						}
-					}
-
-					.box:last-child {
-						margin-right: 30rpx;
-					}
-				}
+				 margin-top: 30rpx;
+				 padding: 0 30rpx;
+				 display: grid;
+				 gap: 15rpx;
+				 grid-template-columns: repeat(3, 1fr);
 			}
 		}
 	}

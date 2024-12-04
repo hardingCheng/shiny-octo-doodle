@@ -25,7 +25,7 @@ defineProps({
 
 </script>
 
-<style>
+<style scoped lang="scss">
 	.themeItem {
 		.box {
 			height: 340rpx;

@@ -1,6 +1,6 @@
 <template>
 	<view class="themeItem">
-		<navigator url="" class="box" v-if="!isMore">
+		<navigator url="/pages/classlist/classlist" class="box" v-if="!isMore">
 			<image class="pic" src="../../common/images/classify1.jpg" mode=""></image>
 			<view class="mask">明星美女</view>
 			<view class="tab">3天前更新</view>

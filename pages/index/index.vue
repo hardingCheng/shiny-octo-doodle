@@ -1,5 +1,8 @@
 <template>
-	<view class="homeLayput">
+	<view class="homeLayput pageBg">
+		<!-- #ifndef MP-TOUTIAO -->
+		<custom-nav-bar title="推荐"></custom-nav-bar>
+		<!-- #endif -->
 		<view class="banner">
 			<swiper :indicator-dots="true" :autoplay="true" :interval="3000" :duration="1000" :circular="true">
 				<swiper-item v-for="i in 5">
@@ -54,7 +57,7 @@
 			</common-title>
 
 			<view class="content">
-			  <theme-item v-for="i in 8"></theme-item>
+				<theme-item v-for="i in 8"></theme-item>
 				<theme-item :isMore="true"></theme-item>
 			</view>
 
@@ -63,8 +66,6 @@
 </template>
 
 <script setup>
-	import commonTitle from '../../components/common-title/common-title.vue';
-  import themeItem from '../../components/theme-item/theme-item.vue';
 </script>
 
 <style scoped lang="scss">
@@ -201,11 +202,11 @@
 			}
 
 			.content {
-				 margin-top: 30rpx;
-				 padding: 0 30rpx;
-				 display: grid;
-				 gap: 15rpx;
-				 grid-template-columns: repeat(3, 1fr);
+				margin-top: 30rpx;
+				padding: 0 30rpx;
+				display: grid;
+				gap: 15rpx;
+				grid-template-columns: repeat(3, 1fr);
 			}
 		}
 	}

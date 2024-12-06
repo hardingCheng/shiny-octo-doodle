@@ -7,7 +7,7 @@
 		</swiper>
 		<view class="mask" v-if="maskState">
 			<!-- #ifndef MP-TOUTIAO -->
-			<view class="goBack">
+			<view class="goBack" :style="{top:getStatusBarHeight() + 'px'}">
 				<uni-icons type="back" color="#fff" size="20"></uni-icons>
 			</view>
 			<!-- #endif -->
@@ -122,6 +122,9 @@
 	import {
 		ref
 	} from 'vue'
+	import {
+		getStatusBarHeight
+	} from "@/utils/system.js"
 	const maskState = ref(true);
 	const infoPopup = ref(null);
 	const scorePopup = ref(null);

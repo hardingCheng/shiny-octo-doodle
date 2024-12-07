@@ -7,7 +7,7 @@
 		</swiper>
 		<view class="mask" v-if="maskState">
 			<!-- #ifndef MP-TOUTIAO -->
-			<view class="goBack" :style="{top:getStatusBarHeight() + 'px'}">
+			<view class="goBack" :style="{top:getStatusBarHeight() + 'px'}" @click="goBack">
 				<uni-icons type="back" color="#fff" size="20"></uni-icons>
 			</view>
 			<!-- #endif -->
@@ -184,6 +184,10 @@
 		// 	uni.setStorageSync("storgClassList", classList.value);
 		// 	clickScoreClose();
 		// }
+	}
+	
+	const goBack = () => {
+		uni.navigateBack()
 	}
 </script>
 

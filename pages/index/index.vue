@@ -18,7 +18,7 @@
 			<view class="center">
 				<swiper vertical autoplay interval="2000" duration="300" circular>
 					<swiper-item v-for="item in 3" :key="item._id">
-						<navigator :url="'/pages/notice/detail?id='+item._id">
+						<navigator :url="'/pages/notice/notice?id='+item._id">
 							121212
 						</navigator>
 					</swiper-item>
@@ -43,7 +43,7 @@
 			<view class="content">
 				<scroll-view scroll-x>
 					<view class="box" v-for="item in 20" :key="item._id">
-						<image src="../../common/images/classify1.jpg" mode="aspectFill" />
+						<image src="../../common/images/classify1.jpg" mode="aspectFill" @click="goPreview" />
 					</view>
 				</scroll-view>
 			</view>
@@ -66,6 +66,11 @@
 </template>
 
 <script setup>
+	const goPreview = () => {
+		uni.navigateTo({
+			url: '/pages/preview/preview'
+		})
+	}
 </script>
 
 <style scoped lang="scss">

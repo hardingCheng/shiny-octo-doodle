@@ -4,28 +4,32 @@
 			"path": "pages/index/index",
 			"style": {
 				"navigationBarTitleText": "首页",
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": false
 			}
 		},
 		{
 			"path": "pages/classify/classify",
 			"style": {
 				"navigationBarTitleText": "分类",
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": false
 			}
 		},
 		{
 			"path": "pages/user/user",
 			"style": {
 				"navigationBarTitleText": "我的",
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": false
 			}
 		},
 		{
 			"path" : "pages/classlist/classlist",
 			"style" : 
 			{
-				"navigationBarTitleText" : "分类列表"
+				"navigationBarTitleText" : "分类列表",
+				"enablePullDownRefresh": false
 			}
 		},
 		{
@@ -33,7 +37,16 @@
 			"style" : 
 			{
 				"navigationBarTitleText" : "壁纸预览",
-				"navigationStyle": "custom"
+				"navigationStyle": "custom",
+				"enablePullDownRefresh": false
+			}
+		},
+		{
+			"path" : "pages/notice/notice",
+			"style" : 
+			{
+				"navigationBarTitleText" : "公告详情",
+				"enablePullDownRefresh": false
 			}
 		}
 	],

@@ -1,8 +1,8 @@
 <template>
 	<view class="preview">
-		<swiper :indicator-dots="false" :autoplay="true" :interval="3000" :duration="1000" :circular="true">
-			<swiper-item v-for="i in 10">
-				<image src="../../common/images/preview1.jpg" @click="maskChange" mode="aspectFill"></image>
+		<swiper circular :current="currentIndex" @change="swiperChange">
+			<swiper-item v-for="(item,index) in classList" :key="item._id">
+				<image v-if="readImgs.includes(index)" @click="maskChange" :src="item.picurl" mode="aspectFill"></image>
 			</swiper-item>
 		</swiper>
 		<view class="mask" v-if="maskState">
@@ -11,7 +11,7 @@
 				<uni-icons type="back" color="#fff" size="20"></uni-icons>
 			</view>
 			<!-- #endif -->
-			<view class="count">3 / 5</view>
+			<view class="count">{{currentIndex+1}} / {{classList.length}}</view>
 			<view class="time">
 				<uni-dateformat :date="new Date()" format="hh:mm"></uni-dateformat>
 			</view>
@@ -26,7 +26,7 @@
 
 				<view class="box" @click="clickScore">
 					<uni-icons type="star" size="28"></uni-icons>
-					<view class="text">7分</view>
+					<view class="text">{{currentInfo.score}}分</view>
 				</view>
 
 				<view class="box">
@@ -48,7 +48,7 @@
 					<view class="content">
 						<view class="row">
 							<view class="label">壁纸ID：</view>
-							<text selectable class="value">12313131313</text>
+							<text selectable class="value">{{currentInfo._id}}</text>
 						</view>
 
 						<view class="row">
@@ -58,29 +58,29 @@
 
 						<view class="row">
 							<view class="label">发布者：</view>
-							<text class="value">徐哈哈</text>
+							<text class="value">{{currentInfo.nickname}}</text>
 						</view>
 
 						<view class="row">
 							<text class="label">评分：</text>
 							<view class='value roteBox'>
-								<uni-rate readonly touchable value="5" size="16" />
-								<text class="score">4分</text>
+								<uni-rate readonly touchable :value="currentInfo.score" size="16" />
+								<text class="score">{{currentInfo.score}}分</text>
 							</view>
 						</view>
 
 						<view class="row">
 							<text class="label">摘要：</text>
 							<view class='value'>
-								测试摘要
+								{{currentInfo.description}}
 							</view>
 						</view>
 
 						<view class="row">
 							<text class="label">标签：</text>
 							<view class='value tabs'>
-								<view class="tab" v-for="tab in 3" :key="tab">
-									真棒
+								<view class="tab" v-for="tab in currentInfo.tabs" :key="tab">
+									{{tab}}
 								</view>
 							</view>
 						</view>
@@ -121,24 +121,77 @@
 <script setup>
 	import {
 		ref
-	} from 'vue'
+	} from 'vue';
+	import {
+		onLoad,
+		onShareAppMessage,
+		onShareTimeline
+	} from "@dcloudio/uni-app"
 	import {
 		getStatusBarHeight
 	} from "@/utils/system.js"
+	import {
+		apiGetSetupScore,
+		apiWriteDownload,
+		apiDetailWall
+	} from "@/api/apis.js"
 	const maskState = ref(true);
 	const infoPopup = ref(null);
 	const scorePopup = ref(null);
 	const userScore = ref(0)
+	const classList = ref([]);
+	const currentId = ref(null);
+	const currentIndex = ref(0)
+	const currentInfo = ref(null);
 	const isScore = ref(false);
-	//遮罩层状态
-	const maskChange = () => {
-		maskState.value = !maskState.value
+	const readImgs = ref([]);
+
+
+	const storgClassList = uni.getStorageSync("storgClassList") || [];
+	classList.value = storgClassList.map(item => {
+		return {
+			...item,
+			picurl: item.smallPicurl.replace("_small.webp", ".jpg")
+		}
+	})
+
+
+
+	onLoad(async (e) => {
+		currentId.value = e.id;
+		if (e.type == 'share') {
+			let res = await apiDetailWall({
+				id: currentId.value
+			});
+			classList.value = res.data.map(item => {
+				return {
+					...item,
+					picurl: item.smallPicurl.replace("_small.webp", ".jpg")
+				}
+			})
+		}
+		currentIndex.value = classList.value.findIndex(item => item._id == currentId.value)
+		currentInfo.value = classList.value[currentIndex.value]
+		readImgsFun();
+	})
+
+
+	const swiperChange = (e) => {
+		currentIndex.value = e.detail.current;
+		currentInfo.value = classList.value[currentIndex.value]
+		readImgsFun();
+		console.log(e);
 	}
+
+
+
+	console.log(classList.value);
 
 	//点击info弹窗
 	const clickInfo = () => {
 		infoPopup.value.open();
 	}
+
 	//点击关闭信息弹窗
 	const clickInfoClose = () => {
 		infoPopup.value.close();
@@ -146,48 +199,186 @@
 
 	//评分弹窗
 	const clickScore = () => {
-		// if (currentInfo.value.userScore) {
-		// 	isScore.value = true;
-		// 	userScore.value = currentInfo.value.userScore;
-		// }
+		if (currentInfo.value.userScore) {
+			isScore.value = true;
+			userScore.value = currentInfo.value.userScore;
+		}
 		scorePopup.value.open();
 	}
-
 	//关闭评分框
 	const clickScoreClose = () => {
 		scorePopup.value.close();
 		userScore.value = 0;
 		isScore.value = false;
 	}
+
 	//确认评分
 	const submitScore = async () => {
-		clickScoreClose();
-		// uni.showLoading({
-		// 	title: "加载中..."
-		// })
-		// let {
-		// 	classid,
-		// 	_id: wallId
-		// } = currentInfo.value;
-		// let res = await apiGetSetupScore({
-		// 	classid,
-		// 	wallId,
-		// 	userScore: userScore.value
-		// })
-		// uni.hideLoading();
-		// if (res.errCode === 0) {
-		// 	uni.showToast({
-		// 		title: "评分成功",
-		// 		icon: "none"
-		// 	})
-		// 	classList.value[currentIndex.value].userScore = userScore.value;
-		// 	uni.setStorageSync("storgClassList", classList.value);
-		// 	clickScoreClose();
-		// }
+		uni.showLoading({
+			title: "加载中..."
+		})
+		let {
+			classid,
+			_id: wallId
+		} = currentInfo.value;
+		let res = await apiGetSetupScore({
+			classid,
+			wallId,
+			userScore: userScore.value
+		})
+		uni.hideLoading();
+		if (res.errCode === 0) {
+			uni.showToast({
+				title: "评分成功",
+				icon: "none"
+			})
+			classList.value[currentIndex.value].userScore = userScore.value;
+			uni.setStorageSync("storgClassList", classList.value);
+			clickScoreClose();
+		}
 	}
-	
+
+
+	//遮罩层状态
+	const maskChange = () => {
+		maskState.value = !maskState.value
+	}
+
+
+	//返回上一页
 	const goBack = () => {
-		uni.navigateBack()
+		uni.navigateBack({
+			success: () => {
+
+			},
+			fail: (err) => {
+				uni.reLaunch({
+					url: "/pages/index/index"
+				})
+			}
+		})
+	}
+
+
+	//点击下载
+	const clickDownload = async () => {
+
+		// #ifdef H5
+		uni.showModal({
+			content: "请长按保存壁纸",
+			showCancel: false
+		})
+		// #endif
+
+		// #ifndef H5
+		try {
+
+			uni.showLoading({
+				title: "下载中...",
+				mask: true
+			})
+			let {
+				classid,
+				_id: wallId
+			} = currentInfo.value;
+			let res = await apiWriteDownload({
+				classid,
+				wallId
+			})
+			if (res.errCode != 0) throw res;
+			uni.getImageInfo({
+				src: currentInfo.value.picurl,
+				success: (res) => {
+					uni.saveImageToPhotosAlbum({
+						filePath: res.path,
+						success: (res) => {
+							uni.showToast({
+								title: "保存成功，请到相册查看",
+								icon: "none"
+							})
+						},
+						fail: err => {
+							if (err.errMsg == 'saveImageToPhotosAlbum:fail cancel') {
+								uni.showToast({
+									title: '保存失败，请重新点击下载',
+									icon: "none"
+								})
+								return;
+							}
+							uni.showModal({
+								title: "授权提示",
+								content: "需要授权保存相册",
+								success: res => {
+									if (res.confirm) {
+										uni.openSetting({
+											success: (setting) => {
+												console.log(
+													setting);
+												if (setting
+													.authSetting[
+														'scope.writePhotosAlbum'
+													]) {
+													uni.showToast({
+														title: "获取授权成功",
+														icon: "none"
+													})
+												} else {
+													uni.showToast({
+														title: "获取权限失败",
+														icon: "none"
+													})
+												}
+											}
+										})
+									}
+								}
+							})
+						},
+						complete: () => {
+							uni.hideLoading();
+						}
+					})
+
+				}
+			})
+
+		} catch (err) {
+			console.log(err);
+			uni.hideLoading();
+		}
+		// #endif
+	}
+
+
+
+
+	//分享给好友
+	onShareAppMessage((e) => {
+		return {
+			title: "咸虾米壁纸",
+			path: "/pages/preview/preview?id=" + currentId.value + "&type=share"
+		}
+	})
+
+
+	//分享朋友圈
+	onShareTimeline(() => {
+		return {
+			title: "咸虾米壁纸",
+			query: "id=" + currentId.value + "&type=share"
+		}
+	})
+
+
+
+
+	function readImgsFun() {
+		readImgs.value.push(
+			currentIndex.value <= 0 ? classList.value.length - 1 : currentIndex.value - 1,
+			currentIndex.value,
+			currentIndex.value >= classList.value.length - 1 ? 0 : currentIndex.value + 1
+		)
+		readImgs.value = [...new Set(readImgs.value)];
 	}
 </script>
 

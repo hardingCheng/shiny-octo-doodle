@@ -5,8 +5,8 @@
 		<!-- #endif -->
 		<view class="banner">
 			<swiper :indicator-dots="true" :autoplay="true" :interval="3000" :duration="1000" :circular="true">
-				<swiper-item v-for="i in 5">
-					<image src="../../common/images/banner2.jpg" mode="aspectFill" />
+				<swiper-item v-for="item in bannerList" :key="item._id">
+					<image :src="item.picurl" mode="aspectFill" />
 				</swiper-item>
 			</swiper>
 		</view>
@@ -17,9 +17,9 @@
 			</view>
 			<view class="center">
 				<swiper vertical autoplay interval="2000" duration="300" circular>
-					<swiper-item v-for="item in 3" :key="item._id">
+					<swiper-item v-for="item in noticeList" :key="item._id">
 						<navigator :url="'/pages/notice/notice?id='+item._id">
-							121212
+							{{item.title}}
 						</navigator>
 					</swiper-item>
 				</swiper>
@@ -42,8 +42,8 @@
 			</common-title>
 			<view class="content">
 				<scroll-view scroll-x>
-					<view class="box" v-for="item in 20" :key="item._id">
-						<image src="../../common/images/classify1.jpg" mode="aspectFill" @click="goPreview" />
+					<view class="box" v-for="item in randomList" :key="item._id" @click="goPreview(item._id)">
+						<image :src="item.smallPicurl" mode="aspectFill"></image>
 					</view>
 				</scroll-view>
 			</view>
@@ -57,7 +57,7 @@
 			</common-title>
 
 			<view class="content">
-				<theme-item v-for="i in 8"></theme-item>
+				<theme-item v-for="item in classifyList" :key="item._id" :item="item"></theme-item>
 				<theme-item :isMore="true"></theme-item>
 			</view>
 
@@ -66,13 +66,84 @@
 </template>
 
 <script setup>
-	const goPreview = () => {
+	import {
+		ref
+	} from 'vue';
+	import {
+		onShareAppMessage,
+		onShareTimeline
+	} from "@dcloudio/uni-app"
+	import {
+		apiGetBanner,
+		apiGetDayRandom,
+		apiGetNotice,
+		apiGetClassify
+	} from "@/api/apis.js"
+
+	const bannerList = ref([]);
+	const randomList = ref([]);
+	const noticeList = ref([]);
+	const classifyList = ref([]);
+
+	const getBanner = async () => {
+		let res = await apiGetBanner();
+		bannerList.value = res.data;
+	}
+
+	const getDayRandom = async () => {
+		let res = await apiGetDayRandom();
+		randomList.value = res.data
+	}
+
+	const getNotice = async () => {
+		let res = await apiGetNotice({
+			select: true
+		});
+		noticeList.value = res.data
+	}
+
+	const getClassify = async () => {
+		let res = await apiGetClassify({
+			select: true
+		});
+		classifyList.value = res.data
+	}
+
+
+
+
+
+
+	//跳转到预览页面
+	const goPreview = (id) => {
+		uni.setStorageSync("storgClassList", randomList.value);
 		uni.navigateTo({
-			url: '/pages/preview/preview'
+			url: "/pages/preview/preview?id=" + id
 		})
 	}
-</script>
 
+
+	//分享给好友
+	onShareAppMessage((e) => {
+		return {
+			title: "分享壁纸，好看的手机壁纸",
+			path: "/pages/classify/classify"
+		}
+	})
+
+	//分享朋友圈
+	onShareTimeline(() => {
+		return {
+			title: "分享壁纸，好看的手机壁纸"
+		}
+	})
+
+
+	getBanner();
+	getDayRandom();
+	getNotice();
+	getClassify();
+</script>
 <style scoped lang="scss">
 	.homeLayput {
 		.banner {

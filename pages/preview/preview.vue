@@ -1,5 +1,5 @@
 <template>
-	<view class="preview">
+	<view class="preview" v-if="currentInfo">
 		<swiper circular :current="currentIndex" @change="swiperChange">
 			<swiper-item v-for="(item,index) in classList" :key="item._id">
 				<image v-if="readImgs.includes(index)" @click="maskChange" :src="item.picurl" mode="aspectFill"></image>
@@ -29,7 +29,7 @@
 					<view class="text">{{currentInfo.score}}分</view>
 				</view>
 
-				<view class="box">
+				<view class="box" @click="clickDownload">
 					<uni-icons type="download" size="23"></uni-icons>
 					<view class="text">下载</view>
 				</view>

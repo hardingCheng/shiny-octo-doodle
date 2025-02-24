@@ -1,11 +1,13 @@
 <template>
-	<view class="userLayout pageBg">
+	<view class="userLayout pageBg" v-if="userinfo">
 		<view class="userInfo">
 			<view class="avatar">
 				<image src="../../static/logo.png" mode="aspectFill"></image>
 			</view>
-			<view class="ip">127.0.0.1</view>
-			<view class="address">来自于：北京</view>
+      <view class="ip">{{userinfo.IP}}</view>
+      <view class="address">来自于：
+        {{ userinfo.address.city || userinfo.address.province || userinfo.address.country}}
+      </view>
 		</view>
 		<view class="section">
 			<view class="list">
@@ -16,7 +18,7 @@
 							<view class="text">我的下载</view>
 						</view>
 						<view class="right">
-							<view class="text">20</view>
+              <view class="text">{{userinfo.downloadSize}}</view>
 							<uni-icons type="right" size="15" color="#aaa"></uni-icons>
 						</view>
 					</view>
@@ -29,7 +31,7 @@
 							<view class="text">我的评分</view>
 						</view>
 						<view class="right">
-							<view class="text">20</view>
+              <view class="text">{{userinfo.scoreSize}}</view>
 							<uni-icons type="right" size="15" color="#aaa"></uni-icons>
 						</view>
 					</view>
@@ -83,9 +85,33 @@
 			</view>
 		</view>
 	</view>
+  <view class="loadingLayout" v-else>
+    <view :style="{height:getNavBarHeight()+'px'}"></view>
+    <uni-load-more status="loading"></uni-load-more>
+  </view>
 </template>
 
 <script setup>
+import {getNavBarHeight} from "@/utils/system.js"
+import {apiUserInfo} from "@/api/apis.js"
+import { ref } from "vue";
+
+const userinfo = ref(null)
+
+const clickContact = ()=>{
+  uni.makePhoneCall({
+    phoneNumber:"114"
+  })
+}
+
+const getUserInfo = ()=>{
+  apiUserInfo().then(res=>{
+    console.log(res);
+    userinfo.value = res.data
+  })
+}
+
+getUserInfo();
 </script>
 
 <style scoped lang="scss">

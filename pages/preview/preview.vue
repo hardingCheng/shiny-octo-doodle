@@ -8,7 +8,7 @@
 		<view class="mask" v-if="maskState">
 			<!-- #ifndef MP-TOUTIAO -->
 			<view class="goBack" :style="{top:getStatusBarHeight() + 'px'}" @click="goBack">
-				<uni-icons type="back" color="#fff" size="20"></uni-icons>
+				<uni-icons :type="e?.type === 'share' ? 'home' : 'back'" color="#fff" size="20"></uni-icons>
 			</view>
 			<!-- #endif -->
 			<view class="count">{{currentIndex+1}} / {{classList.length}}</view>
@@ -87,9 +87,7 @@
 
 						<view class="copyright">
 							声明：本图片来用户投稿，非商业使用，用于免费学习交流，如侵犯了您的权益，您可以拷贝壁纸ID举报至平台，邮箱hardingcheng@163.com，管理将删除侵权壁纸，维护您的权益。
-
 						</view>
-
 						<view class="safe-area-inset-bottom"></view>
 					</view>
 				</scroll-view>
@@ -135,6 +133,7 @@
 		apiWriteDownload,
 		apiDetailWall
 	} from "@/api/apis.js"
+  import {gotoHome} from "@/utils/common";
 	const maskState = ref(true);
 	const infoPopup = ref(null);
 	const scorePopup = ref(null);
@@ -159,6 +158,7 @@
 
 	onLoad(async (e) => {
 		currentId.value = e.id;
+    if(!currentId.value) gotoHome()
 		if (e.type == 'share') {
 			let res = await apiDetailWall({
 				id: currentId.value
@@ -247,11 +247,15 @@
 
 	//返回上一页
 	const goBack = () => {
-		uni.navigateBack({
-			success: () => {
+		if (currentId.value && e?.type === 'share') {
+			uni.reLaunch({
+				url: "/pages/index/index"
+			})
+			return
+		}
 
-			},
-			fail: (err) => {
+		uni.navigateBack({
+			fail: () => {
 				uni.reLaunch({
 					url: "/pages/index/index"
 				})
@@ -355,7 +359,7 @@
 	//分享给好友
 	onShareAppMessage((e) => {
 		return {
-			title: "咸虾米壁纸",
+			title: "壁纸分享",
 			path: "/pages/preview/preview?id=" + currentId.value + "&type=share"
 		}
 	})
@@ -364,7 +368,7 @@
 	//分享朋友圈
 	onShareTimeline(() => {
 		return {
-			title: "咸虾米壁纸",
+			title: "壁纸分享",
 			query: "id=" + currentId.value + "&type=share"
 		}
 	})

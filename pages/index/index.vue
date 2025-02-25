@@ -6,7 +6,18 @@
 		<view class="banner">
 			<swiper :indicator-dots="true" :autoplay="true" :interval="3000" :duration="1000" :circular="true">
 				<swiper-item v-for="item in bannerList" :key="item._id">
-					<image :src="item.picurl" mode="aspectFill" />
+          <navigator v-if="item.target === 'miniProgram'"
+                     :url="item.url"
+                     class="like"
+                     target="miniProgram"
+                     :app-id="item.appid"
+          >
+            <image :src="item.picurl" mode="aspectFill"></image>
+          </navigator>
+
+          <navigator v-else :url="`/pages/classlist/classlist?${item.url}`" class="like">
+            <image :src="item.picurl" mode="aspectFill"></image>
+          </navigator>
 				</swiper-item>
 			</swiper>
 		</view>
@@ -149,23 +160,25 @@
 		.banner {
 			width: 750rpx;
 			padding: 30rpx 0;
+      swiper{
+        width: 750rpx;
+        height: 340rpx;
+        &-item{
+          width: 100%;
+          height: 100%;
+          padding:0 30rpx;
+          .like{
+            width: 100%;
+            height: 100%;
+            image{
+              width: 100%;
+              height: 100%;
+              border-radius: 10rpx;
+            }
+          }
 
-			swiper {
-				width: 750rpx;
-				height: 340rpx;
-
-				&-item {
-					padding: 0 30rpx;
-					width: 100%;
-					height: 100%;
-
-					image {
-						width: 100%;
-						height: 100%;
-						border-radius: 10rpx;
-					}
-				}
-			}
+        }
+      }
 		}
 
 		.notice {
